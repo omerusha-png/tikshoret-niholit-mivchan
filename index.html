@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>תקשורת ניהולית — מחברת למבחן</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FFF8F5;
+    --sidebar-bg: #FEF0E7;
+    --active: #FED7AA;
+    --border: #FDBA74;
+    --accent: #92400E;
+    --text: #431407;
+    --text-light: #9A3412;
+    --white: #ffffff;
+    --card-bg: #ffffff;
+    --correct: #e8f5e9;
+    --correct-border: #66bb6a;
+    --wrong: #ffebee;
+    --wrong-border: #ef9a9a;
+    --tab-inactive: #FFF5EE;
+  }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    direction: rtl;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── TOP BANNER ── */
+  .top-banner {
+    background: var(--sidebar-bg);
+    border-bottom: 2px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .top-banner .logo { font-size: 28px; }
+  .top-banner .tagline {
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 210px;
+    background: var(--sidebar-bg);
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .sidebar-title {
+    background: var(--accent);
+    color: white;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .topic-list {
+    overflow-y: auto;
+    flex: 1;
+  }
+  .topic-btn {
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    background: transparent;
+    text-align: right;
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    direction: rtl;
+    transition: background 0.15s;
+  }
+  .topic-btn:hover { background: #FFE4CC; }
+  .topic-btn.active {
+    background: var(--active);
+    font-weight: bold;
+    color: #431407;
+  }
+  .topic-btn .status { font-size: 14px; flex-shrink: 0; }
+
+  /* Progress bar */
+  .progress-wrap {
+    padding: 10px 14px;
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .topic-heading {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--accent);
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .tab-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: var(--tab-inactive);
+    color: var(--accent);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--active);
+    border-color: #92400E;
+    color: #431407;
+    font-weight: bold;
+  }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; overflow-y: auto; flex: 1; }
+  .tab-panel.active { display: block; }
+
+  /* ── SUMMARY ── */
+  .summary-section {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .summary-section h3 {
+    color: var(--accent);
+    font-size: 15px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-section p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .summary-section ul {
+    padding-right: 20px;
+    margin-top: 6px;
+  }
+  .summary-section ul li {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .summary-section ol {
+    padding-right: 20px;
+    margin-top: 6px;
+  }
+  .summary-section ol li {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .tag {
+    display: inline-block;
+    background: #f0f7ec;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: var(--accent);
+    margin: 3px;
+  }
+
+  /* ── FLASHCARDS ── */
+  .flashcard-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+  }
+  .card-counter {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+  .flashcard-scene {
+    width: 520px;
+    max-width: 100%;
+    height: 200px;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  .flashcard-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+  }
+  .flashcard-inner.flipped { transform: rotateY(180deg); }
+  .flashcard-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    border: 2px solid var(--border);
+  }
+  .flashcard-front {
+    background: var(--card-bg);
+  }
+  .flashcard-back {
+    background: var(--sidebar-bg);
+    transform: rotateY(180deg);
+  }
+  .flashcard-front .card-label {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .flashcard-front .card-question {
+    font-size: 17px;
+    font-weight: bold;
+    color: var(--accent);
+    line-height: 1.5;
+  }
+  .flashcard-front .card-hint {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 14px;
+  }
+  .flashcard-back .card-answer {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .flashcard-nav {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .nav-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: var(--card-bg);
+    color: var(--accent);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .nav-btn:hover { background: var(--active); }
+  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+  .tab-btn:focus, .nav-btn:focus, .quiz-opt:focus, .topic-btn:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ── QUIZ ── */
+  .quiz-wrapper { padding: 4px 0; }
+  .quiz-question-block {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+  }
+  .quiz-q-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--card-bg);
+    text-align: right;
+    font-family: inherit;
+    color: var(--text);
+    width: 100%;
+  }
+  .quiz-opt:hover:not(:disabled) { background: #f0f7ec; border-color: var(--accent); }
+  .quiz-opt.correct { background: var(--correct); border-color: var(--correct-border); color: #1b5e20; font-weight: bold; }
+  .quiz-opt.wrong { background: var(--wrong); border-color: var(--wrong-border); color: #b71c1c; }
+  .quiz-explanation {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    line-height: 1.6;
+    display: none;
+  }
+  .quiz-score {
+    background: var(--active);
+    border: 2px solid #92400E;
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #431407;
+    margin-top: 8px;
+    display: none;
+  }
+  .retry-btn {
+    margin-top: 10px;
+    padding: 8px 22px;
+    border-radius: 20px;
+    border: 2px solid #92400E;
+    background: white;
+    color: #431407;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .summary-done-wrap {
+    margin-top: 16px;
+    text-align: center;
+  }
+  .summary-done-btn {
+    padding: 10px 28px;
+    border-radius: 24px;
+    border: 2px solid var(--border);
+    background: white;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .summary-done-btn:hover { background: var(--sidebar-bg); border-color: var(--accent); }
+  .summary-done-btn.done {
+    background: var(--active);
+    border-color: #92400E;
+    color: #431407;
+    cursor: default;
+  }
+  .general-review-btn {
+    display: block;
+    margin: 8px 10px;
+    padding: 9px 14px;
+    background: var(--active);
+    border: 2px solid #92400E;
+    border-radius: 10px;
+    color: #431407;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: background 0.15s;
+  }
+  .general-review-btn:hover { background: #FFD5B0; }
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: var(--sidebar-bg);
+    border-bottom: 1.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .review-back-btn {
+    padding: 6px 14px;
+    border-radius: 16px;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--accent);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .review-back-btn:hover { background: var(--sidebar-bg); }
+  .review-title { font-size: 15px; font-weight: bold; color: var(--accent); flex: 1; text-align: center; }
+  .topic-badge {
+    display: inline-block;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  /* ── HAMBURGER (hidden on desktop) ── */
+  .hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 2px 6px;
+    color: var(--accent);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  /* ── SIDEBAR OVERLAY (mobile backdrop) ── */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 99;
+  }
+  .sidebar-overlay.visible { display: block; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 640px) {
+    body { height: auto; min-height: 100vh; overflow: auto; }
+
+    .top-banner { padding: 8px 12px; gap: 8px; }
+    .top-banner .logo { font-size: 20px; flex-shrink: 0; }
+    .top-banner .tagline { font-size: 11px; flex: 1; }
+
+    .hamburger-btn { display: block; }
+
+    .layout { flex-direction: column; overflow: visible; min-height: calc(100vh - 48px); }
+
+    /* Sidebar slides in from right as overlay */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -230px;
+      width: 220px;
+      height: 100vh;
+      z-index: 100;
+      transition: right 0.28s ease;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.18);
+      border-left: 2px solid var(--border);
+    }
+    .sidebar.open { right: 0; }
+
+    .main {
+      padding: 12px;
+      gap: 10px;
+      overflow: visible;
+      flex: none;
+      min-height: 0;
+    }
+
+    .topic-heading { font-size: 16px; }
+
+    .tabs { gap: 5px; flex-wrap: wrap; }
+    .tab-btn { padding: 7px 13px; font-size: 12px; }
+
+    .flashcard-scene { width: 100%; height: auto; min-height: 160px; perspective: 800px; }
+    .flashcard-inner { min-height: 160px; position: relative; }
+    .flashcard-face { position: relative; min-height: 160px; height: auto; padding: 18px 16px; }
+    .flashcard-back { position: absolute; top: 0; left: 0; right: 0; bottom: 0; min-height: 160px; }
+    .flashcard-front .card-question { font-size: 15px; }
+    .flashcard-back .card-answer { font-size: 13px; }
+
+    .quiz-opt { font-size: 13px; padding: 11px 12px; }
+    .quiz-question-block { padding: 13px 14px; }
+
+    .summary-section { padding: 13px 14px; }
+
+    .general-review-btn { margin: 6px 8px; padding: 8px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HELP MODAL -->
+<div id="helpModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:16px; max-width:520px; width:90%; max-height:85vh; overflow-y:auto; padding:28px 28px 20px; direction:rtl; font-family:inherit; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <button onclick="document.getElementById('helpModal').style.display='none'" style="position:absolute; top:14px; left:16px; background:none; border:none; font-size:22px; cursor:pointer; color:#888; line-height:1;">✕</button>
+    <h2 style="margin:0 0 18px; color:var(--accent); font-size:18px;">📖 איך משתמשים באתר?</h2>
+
+    <div style="display:flex; flex-direction:column; gap:14px; font-size:14px; color:#444; line-height:1.65;">
+
+      <div style="background:var(--sidebar-bg); border-radius:10px; padding:12px 14px;">
+        <strong style="color:var(--accent);">📚 בחירת נושא</strong><br>
+        בתפריט הצד ימין תמצאו את כל 12 נושאי המבחן. לחצו על נושא כדי לפתוח אותו. נושא שהושלם יסומן ב-✅.
+      </div>
+
+      <div style="background:var(--sidebar-bg); border-radius:10px; padding:12px 14px;">
+        <strong style="color:var(--accent);">📖 טאב סיכום</strong><br>
+        סיכום קצר של הנושא עם נקודות המפתח. כשסיימתם לקרוא — לחצו על כפתור <em>"סיימתי לקרוא — סמן כהושלם"</em> בתחתית כדי לעדכן את פס ההתקדמות.
+      </div>
+
+      <div style="background:var(--sidebar-bg); border-radius:10px; padding:12px 14px;">
+        <strong style="color:var(--accent);">🃏 טאב כרטיסיות</strong><br>
+        כרטיסיות זיכרון לחזרה. לחצו על הכרטיסייה כדי להפוך אותה ולראות את התשובה. השתמשו בכפתורי <em>הבאה / הקודמת</em> לניווט.
+      </div>
+
+      <div style="background:var(--sidebar-bg); border-radius:10px; padding:12px 14px;">
+        <strong style="color:var(--accent);">✅ טאב חידון</strong><br>
+        שאלות אמריקאיות על הנושא. לחצו על תשובה — תקבלו מיד חיווי ירוק/אדום והסבר קצר. בסיום כל השאלות תראו את הציון שלכם. אפשר לנסות שוב עם <em>נסי שוב 🔄</em>.
+      </div>
+
+      <div style="background:#FEF0E7; border-radius:10px; padding:12px 14px; border: 1.5px solid #FDBA74;">
+        <strong style="color:#92400E;">🔀 חזרה כללית</strong><br>
+        לחצו על הכפתור הצהוב בתחתית תפריט הצד. מצב זה מערבב את <strong>כל הכרטיסיות מכל הנושאים</strong> ומציג חידון של <strong>30 שאלות</strong> שנבחרות אקראית מכל הנושאים — מושלם לחזרה לפני מבחן.
+      </div>
+
+      <div style="background:var(--sidebar-bg); border-radius:10px; padding:12px 14px;">
+        <strong style="color:var(--accent);">📊 פס התקדמות</strong><br>
+        בתחתית תפריט הצד תראו כמה נושאים הושלמו. נושא מסומן כהושלם אם קראתם את הסיכום ולחצתם "הושלם", או אם השגתם ציון מלא בחידון.
+      </div>
+
+    </div>
+
+    <div style="text-align:center; margin-top:20px;">
+      <button onclick="document.getElementById('helpModal').style.display='none'" style="padding:9px 28px; background:var(--accent); color:white; border:none; border-radius:20px; font-size:14px; font-weight:bold; cursor:pointer; font-family:inherit;">הבנתי, נתחיל! 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BANNER -->
+<div class="top-banner">
+  <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="פתח תפריט">☰</button>
+  <span class="logo">💬</span>
+  <span class="tagline">עומר שטיינר וקלוד קוד עוזרים לכם.ן ללמוד למבחן בתקשורת ניהולית</span>
+  <button onclick="document.getElementById('helpModal').style.display='flex'" style="margin-right:12px; padding:5px 14px; border-radius:16px; border:1.5px solid var(--border); background:white; color:var(--accent); font-size:13px; font-weight:bold; cursor:pointer; font-family:inherit; flex-shrink:0;">? איך משתמשים</button>
+</div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-title">📚 נושאי המבחן</div>
+    <div class="topic-list" id="topicList"></div>
+    <button class="general-review-btn" onclick="startGeneralReview()">🔀 חזרה כללית</button>
+    <div class="progress-wrap">
+      <div class="progress-label" id="progressLabel">0 / 10 הושלמו</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topic-heading" id="topicHeading"></div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('summary')" aria-label="טאב סיכום">📖 סיכום</button>
+      <button class="tab-btn" onclick="switchTab('flashcards')" aria-label="טאב כרטיסיות">🃏 כרטיסיות</button>
+      <button class="tab-btn" onclick="switchTab('quiz')" aria-label="טאב חידון">✅ חידון</button>
+    </div>
+    <div class="tab-panel active" id="panel-summary"></div>
+    <div class="tab-panel" id="panel-flashcards"></div>
+    <div class="tab-panel" id="panel-quiz"></div>
+    <div id="general-review-panel" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+      <div class="review-header">
+        <button class="review-back-btn" onclick="exitGeneralReview()">→ חזרה לנושאים</button>
+        <span class="review-title">🔀 חזרה כללית — כל הנושאים</span>
+      </div>
+      <div class="tabs" id="review-tabs" style="flex-shrink:0;">
+        <button class="tab-btn active" onclick="showReviewTab('cards')" id="rtab-cards">🃏 כרטיסיות</button>
+        <button class="tab-btn" onclick="showReviewTab('quiz')" id="rtab-quiz">✅ חידון (30)</button>
+      </div>
+      <div id="review-content" style="flex:1; overflow-y:auto; padding:0 20px 20px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const TOPICS = [
+  // ── 1. מודלי תקשורת ──────────────────────────────────────────────────────
+  {
+    title: '1. מודלי תקשורת',
+    summary: [
+      { heading: 'מודל לינארי — שאנון ווויבר (1948)',
+        body: '<p>המודל הלינארי רואה בתקשורת תהליך <strong>חד-כיווני</strong>: מקור ← משדר ← ערוץ ← רעש ← מקבל ← יעד. המקבל הוא <strong>פסיבי</strong> לחלוטין — אין משוב. המודל מקורו בטלקומוניקציה.</p><ul><li><strong>מקור (Source)</strong>: שולח המסר</li><li><strong>משדר (Transmitter)</strong>: הכלי המקודד את המסר</li><li><strong>ערוץ (Channel)</strong>: אמצעי ההעברה</li><li><strong>רעש (Noise)</strong>: הפרעות בערוץ</li><li><strong>מקבל (Receiver)</strong>: מפענח את המסר</li><li><strong>יעד (Destination)</strong>: הנמען הסופי</li></ul>' },
+      { heading: 'מודל מעגלי/אינטראקטיבי — שרם (1954)',
+        body: '<p>שרם הוסיף <strong>משוב</strong> ו<strong>שדה ניסיון משותף</strong>. כל משתתף הוא גם מקודד וגם מפענח — <strong>תקשורת דו-כיוונית</strong>. ככל שהשדה המשותף גדול יותר, ההבנה טובה יותר.</p>' },
+      { heading: '4 סוגי רעש ארגוני',
+        body: '<ul><li><strong>פיזי</strong> — הפרעות סביבתיות (רעש, תאורה, טמפרטורה)</li><li><strong>פסיכולוגי</strong> — מצבי דעת, דעות קדומות, חרדה, עייפות</li><li><strong>סמנטי</strong> — הבדלי שפה, ז\'רגון, עמימות במילים</li><li><strong>ארגוני</strong> — היררכיה, חוסר פרוטוקולים, בעיות מבניות</li></ul>' },
+    ],
+    cards: [
+      { q: 'מי פיתח את המודל הלינארי ומתי?', a: 'שאנון ווויבר, 1948 — מקורו בתקשורת טלקומוניקציה' },
+      { q: 'מה התפקיד של המקבל במודל הלינארי?', a: 'פסיבי לחלוטין — אין משוב, רק קולט מסרים' },
+      { q: 'מה חידש שרם ב-1954?', a: 'משוב ושדה ניסיון משותף — תקשורת הפכה לדו-כיוונית' },
+      { q: 'מה הם 4 סוגי הרעש הארגוני?', a: 'פיזי, פסיכולוגי, סמנטי, ארגוני' },
+      { q: 'מה ההבדל המרכזי בין המודל הלינארי למעגלי?', a: 'לינארי = חד-כיווני, מקבל פסיבי. מעגלי = דו-כיווני, יש משוב, כל משתתף מקודד ומפענח' },
+      { q: 'מהו רעש סמנטי?', a: 'הבדלי שפה, ז\'רגון, עמימות במילים — כשאנשים מבינים מילים אחרת' },
+      { q: 'מה "שדה ניסיון משותף" לפי שרם?', a: 'הרקע, הניסיון, הידע המשותף של שני הצדדים — ככל שגדול יותר, ההבנה טובה יותר' },
+    ],
+    quiz: [
+      { q: 'מי פיתח את המודל הלינארי של תקשורת?', opts: ['שרם', 'שאנון ווויבר', 'דרוקר', 'וויק'], correct: 1, explanation: 'שאנון ווויבר פיתחו את המודל הלינארי ב-1948 על בסיס טלקומוניקציה' },
+      { q: 'מה ייחודי במודל של שרם (1954) לעומת המודל הלינארי?', opts: ['אין רעש', 'המקבל פסיבי', 'יש משוב ושדה ניסיון משותף', 'יש שלושה ערוצים'], correct: 2, explanation: 'שרם הוסיף משוב ושדה ניסיון משותף — הפך את התקשורת לדו-כיוונית' },
+      { q: 'עובד לא מבין אימייל בגלל ז\'רגון מקצועי זר. איזה סוג רעש זה?', opts: ['פיזי', 'ארגוני', 'פסיכולוגי', 'סמנטי'], correct: 3, explanation: 'ז\'רגון שאינו מוכר הוא רעש סמנטי — הפרעה הנובעת מהבדלי שפה ומשמעות' },
+      { q: 'איזה רעש נגרם מהיררכיה ופרוטוקולים ארגוניים?', opts: ['ארגוני', 'פיזי', 'פסיכולוגי', 'סמנטי'], correct: 0, explanation: 'רעש ארגוני נובע ממבנה הארגון, היררכיה וחוסר פרוטוקולים' },
+      { q: 'לפי המודל הלינארי, מה תפקיד הנמען?', opts: ['שולח משוב', 'מקודד ומפענח', 'פסיבי', 'שולח מסרים נגדיים'], correct: 2, explanation: 'במודל הלינארי הנמען הוא פסיבי לחלוטין — לא נשלח משוב' },
+    ]
+  },
+
+  // ── 2. מודל DISC ──────────────────────────────────────────────────────────
+  {
+    title: '2. מודל DISC',
+    summary: [
+      { heading: 'מהו מודל DISC?',
+        body: '<p>מסגרת לסיווג סגנונות תקשורת ועבודה לפי 4 סוגים עיקריים. כל אדם משלב את כל 4 הסגנונות, אך בדרך כלל אחד או שניים דומיננטיים. <strong>המודל לא שיפוטי</strong> — כל סגנון חזק בהקשרים שונים.</p>' },
+      { heading: 'D — Dominance (שליטה)',
+        body: '<p>ישיר, ממוקד תוצאות, מחליט מהר, אוהב אתגרים. בתקשורת: קצר, עניני, ישיר. <strong>תחת לחץ</strong>: בוסי, חסר סבלנות, שולט-שתלטן.</p>' },
+      { heading: 'I — Influence (השפעה)',
+        body: '<p>נלהב, חברותי, משכנע, אופטימי. בתקשורת: מרגש, מספר סיפורים, נהנה מחיזוק חברתי. <strong>תחת לחץ</strong>: שטחי, מדבר יותר מדי, מפריז בהבטחות.</p>' },
+      { heading: 'S — Steadiness (יציבות)',
+        body: '<p>רגוע, אמין, מאזין טוב, שיתופי, נאמן. בתקשורת: דיפלומטי, מעדיף עבודת צוות. <strong>תחת לחץ</strong>: נמנע מעימות, דוחה החלטות, קשה לו עם שינויים.</p>' },
+      { heading: 'C — Conscientiousness (מצפוניות)',
+        body: '<p>מדויק, שיטתי, לוגי, אנליטי. בתקשורת: מחפש עובדות ונתונים, רוצה להבין לעומק. <strong>תחת לחץ</strong>: ביקורתי מדי, נמנע מסיכון, שוקע בניתוחים.</p>' },
+      { heading: 'יישום מנהיגותי',
+        body: '<p>מנהל יעיל מזהה את סגנון ה-DISC של כל עובד ומתאים את תקשורתו: <strong>ל-D</strong> — דבר ישירות על תוצאות. <strong>ל-I</strong> — שתף בהתלהבות ובחזון. <strong>ל-S</strong> — הסבר הדרגתית, תן זמן. <strong>ל-C</strong> — הכן נתונים ועובדות.</p>' },
+    ],
+    cards: [
+      { q: 'מה מייצגת האות D ב-DISC?', a: 'Dominance — שליטה: ישיר, ממוקד תוצאות, מחליט מהר' },
+      { q: 'מה מייצגת האות I ב-DISC?', a: 'Influence — השפעה: נלהב, חברותי, משכנע, אופטימי' },
+      { q: 'מה מייצגת האות S ב-DISC?', a: 'Steadiness — יציבות: רגוע, מאזין טוב, שיתופי, נאמן' },
+      { q: 'מה מייצגת האות C ב-DISC?', a: 'Conscientiousness — מצפוניות: מדויק, שיטתי, לוגי, אנליטי' },
+      { q: 'כיצד מתנהג סגנון D תחת לחץ?', a: 'בוסי, חסר סבלנות, שולט-שתלטן' },
+      { q: 'כיצד מתנהג סגנון I תחת לחץ?', a: 'שטחי, מדבר יותר מדי, מפריז בהבטחות' },
+      { q: 'כיצד מתנהג סגנון S תחת לחץ?', a: 'נמנע מעימות, דוחה החלטות, קשה לו עם שינויים' },
+      { q: 'כיצד יש לתקשר עם סגנון C?', a: 'להכין נתונים ועובדות, לדבר לוגי ומדויק, לתת מידע מעמיק' },
+    ],
+    quiz: [
+      { q: 'עובד שמדבר הרבה, אופטימי, אוהב חיזוק חברתי — מה הסגנון שלו ב-DISC?', opts: ['D', 'I', 'S', 'C'], correct: 1, explanation: 'I = Influence — נלהב, חברותי, משכנע, נהנה מחיזוק חברתי' },
+      { q: 'מנהל שרוצה תוצאות מהירות, חסר סבלנות, ישיר — מה סגנון ה-DISC שלו?', opts: ['D', 'I', 'S', 'C'], correct: 0, explanation: 'D = Dominance — ישיר, ממוקד תוצאות, מחליט מהר, תחת לחץ: חסר סבלנות' },
+      { q: 'עובד C מבקש מידע נוסף לפני קבלת החלטה. כיצד הכי נכון להגיב?', opts: ['ללחוץ להחלטה מהירה', 'לספר סיפור מעורר', 'לספק עובדות ונתונים מפורטים', 'לשבח אותו בפומבי'], correct: 2, explanation: 'סגנון C מונע על ידי נתונים ולוגיקה — יש לספק מידע מפורט ועובדות' },
+      { q: 'עובד S נמנע מעימות עם עמית. מה סביר שקורה תחת לחץ?', opts: ['נאמר דברים קשים', 'ידחה החלטות ויימנע מקונפליקט', 'ידבר יותר מדי', 'יבצע ביקורת קשה'], correct: 1, explanation: 'תחת לחץ, S נמנע מעימות ודוחה החלטות — מעדיף הרמוניה' },
+      { q: 'מה העיקרון המרכזי של מודל DISC?', opts: ['יש סגנון אחד עדיף', 'המודל מדרג אנשים', 'כל אדם משלב את כל הסגנונות, אין עדיפות', 'I ו-D הם הסגנונות הטובים ביותר'], correct: 2, explanation: 'DISC אינו שיפוטי — כל סגנון חזק בהקשרים שונים, כל אדם משלב את כולם' },
+    ]
+  },
+
+  // ── 3. כנות רדיקלית ──────────────────────────────────────────────────────
+  {
+    title: '3. כנות רדיקלית',
+    summary: [
+      { heading: 'המודל — קים סקוט (2017)',
+        body: '<p>Radical Candor היא מטריצה 2×2 של <strong>Care Personally</strong> (אכפתיות אישית) × <strong>Challenge Directly</strong> (אתגור ישיר). הציר Y = כמה אכפת לי מהאדם. הציר X = כמה אני מאתגר/מבקר ישירות.</p>' },
+      { heading: 'כנות רדיקלית (אכפתיות גבוהה + אתגור גבוה) — האידיאל',
+        body: '<p>אכפת לי מהאדם <strong>וגם</strong> אומר לו את האמת ישירות. מאפשר צמיחה, בונה אמון, מקדם ביצועים. הרביע שהמנהל צריך לשאוף אליו.</p>' },
+      { heading: 'אמפתיה הרסנית (אכפתיות גבוהה + אתגור נמוך) — הנפוץ ביותר',
+        body: '<p>אכפת לי מהאדם אבל <strong>לא מעז לומר לו את האמת</strong>. "רודפי שלום" שלא נותנים משוב שלילי — מונעים צמיחה. הכי נפוץ ולכן הכי מסוכן.</p>' },
+      { heading: 'תוקפנות מגונה (אכפתיות נמוכה + אתגור גבוה)',
+        body: '<p>אומר את האמת אבל <strong>לא אכפת</strong> לו מהאדם. נוצר פחד, פוגע בביטחון העצמי ובאמון. לא בונה קשרים.</p>' },
+      { heading: 'חוסר כנות מניפולטיבי (אכפתיות נמוכה + אתגור נמוך)',
+        body: '<p>לא אכפת ולא מאתגר. יוצר ציניות וחוסר אמון. הרביע הגרוע ביותר.</p>' },
+    ],
+    cards: [
+      { q: 'שני הצירים של מטריצת כנות רדיקלית?', a: 'Care Personally (אכפתיות אישית) ו-Challenge Directly (אתגור ישיר)' },
+      { q: 'מהי "אמפתיה הרסנית"?', a: 'אכפתיות גבוהה + אתגור נמוך — מנהל שאכפת לו אבל לא מעז לומר את האמת' },
+      { q: 'מדוע "אמפתיה הרסנית" היא המסוכנת ביותר?', a: 'כי היא הנפוצה ביותר — מונעת משוב אמיתי וצמיחה' },
+      { q: 'מהי "תוקפנות מגונה"?', a: 'אתגור גבוה + אכפתיות נמוכה — אומר את האמת אבל לא אכפת לו מהאדם, יוצר פחד' },
+      { q: 'מהו האידיאל לפי מודל כנות רדיקלית?', a: 'Radical Candor — אכפתיות גבוהה + אתגור גבוה: אכפת לי מהאדם וגם אומר לו את האמת' },
+      { q: 'מי פיתח את מודל הכנות הרדיקלית ומתי?', a: 'קים סקוט, 2017' },
+      { q: 'מה תוצאת "חוסר כנות מניפולטיבי"?', a: 'ציניות וחוסר אמון — הרביע הגרוע ביותר' },
+    ],
+    quiz: [
+      { q: 'מנהל שרוצה להיות חביב ולא מעיר הערות ביקורתיות — באיזה רביע הוא?', opts: ['כנות רדיקלית', 'תוקפנות מגונה', 'אמפתיה הרסנית', 'חוסר כנות מניפולטיבי'], correct: 2, explanation: 'אמפתיה הרסנית = אכפתיות גבוהה + אתגור נמוך — המנהל רוצה להיות אהוב ולא מעז לבקר' },
+      { q: 'מה מאפיין את הרביע "תוקפנות מגונה"?', opts: ['אכפתיות גבוהה ואתגור גבוה', 'אכפתיות נמוכה ואתגור גבוה', 'אכפתיות גבוהה ואתגור נמוך', 'אכפתיות נמוכה ואתגור נמוך'], correct: 1, explanation: 'תוקפנות מגונה = אכפתיות נמוכה + אתגור גבוה — ביקורת קשה ללא אכפתיות אמיתית' },
+      { q: 'לפי קים סקוט, מה הרביע שמנהל צריך לשאוף אליו?', opts: ['אמפתיה הרסנית', 'תוקפנות מגונה', 'חוסר כנות מניפולטיבי', 'כנות רדיקלית'], correct: 3, explanation: 'כנות רדיקלית = אכפתיות גבוהה + אתגור גבוה — האידיאל המנהיגותי' },
+      { q: 'מה תוצאת "חוסר כנות מניפולטיבי"?', opts: ['אמון גבוה', 'צמיחה מהירה', 'ציניות וחוסר אמון', 'ביצועים גבוהים'], correct: 2, explanation: 'חוסר כנות מניפולטיבי (נמוך/נמוך) יוצר ציניות וחוסר אמון — הגרוע ביותר' },
+      { q: 'מדוע "אמפתיה הרסנית" מסוכנת במיוחד?', opts: ['כי היא גורמת לפחד', 'כי היא נפוצה ביותר ומונעת צמיחה', 'כי היא מניפולטיבית', 'כי היא יוצרת קונפליקט'], correct: 1, explanation: 'הנפוצה ביותר בקרב מנהלים — מרבים להיות "נחמדים" על חשבון משוב אמיתי' },
+    ]
+  },
+
+  // ── 4. MBO — ניהול על פי מטרות ──────────────────────────────────────────
+  {
+    title: '4. MBO — ניהול על פי מטרות',
+    summary: [
+      { heading: 'מהו MBO?',
+        body: '<p>Management by Objectives — פותח על ידי <strong>פיטר דרוקר</strong>. עקרון מרכזי: <em>"ניהול הוא תרגום של מטרות מאקרו-ארגוניות למטרות אופרטיביות אישיות."</em> תהליך של קביעת מטרות <strong>משותפת</strong> — בדיאלוג בין מנהל לעובד, לא כציווי.</p>' },
+      { heading: 'יעדי SMART',
+        body: '<ul><li><strong>S — Specific</strong>: ספציפי ומוגדר בבירור</li><li><strong>M — Measurable</strong>: מדיד — ניתן לכמת ולמדוד</li><li><strong>A — Achievable</strong>: ניתן להשגה — מאתגר אך ריאלי</li><li><strong>R — Relevant</strong>: רלוונטי למטרות הארגון</li><li><strong>T — Time-bound</strong>: מוגבל בזמן — יש דדליין ברור</li></ul>' },
+      { heading: 'תהליך MBO',
+        body: '<p>1. הגדרת מטרות ארגוניות (הנהלה) → 2. <strong>דיאלוג</strong> עם העובד → 3. קביעת יעדים אישיים SMART → 4. ביצוע ומעקב → 5. הערכה ומשוב → 6. מחזור חדש.<br>המפתח: תהליך <strong>שיתופי</strong> — לא מלמעלה למטה.</p>' },
+      { heading: 'יתרונות MBO',
+        body: '<ul><li>מגביר מוטיבציה — עובד שותף לקביעת מטרותיו</li><li>מגביר מחויבות לביצוע</li><li>מאפשר הערכה אובייקטיבית</li><li>מיישר קו בין הפרט לארגון</li></ul>' },
+    ],
+    cards: [
+      { q: 'מי פיתח את מודל MBO?', a: 'פיטר דרוקר' },
+      { q: 'מה עקרון המפתח של MBO?', a: 'ניהול הוא תרגום של מטרות מאקרו-ארגוניות למטרות אופרטיביות אישיות' },
+      { q: 'מה המשמעות של S ב-SMART?', a: 'Specific — ספציפי ומוגדר בבירור' },
+      { q: 'מה המשמעות של M ב-SMART?', a: 'Measurable — מדיד, ניתן לכמת' },
+      { q: 'מה המשמעות של A ב-SMART?', a: 'Achievable — ניתן להשגה, מאתגר אך ריאלי' },
+      { q: 'מה המשמעות של R ב-SMART?', a: 'Relevant — רלוונטי למטרות הארגון' },
+      { q: 'מה המשמעות של T ב-SMART?', a: 'Time-bound — מוגבל בזמן, יש דדליין ברור' },
+      { q: 'מה מיוחד בתהליך קביעת יעדים לפי MBO?', a: 'הוא שיתופי — דיאלוג בין מנהל לעובד, לא ציווי מלמעלה' },
+    ],
+    quiz: [
+      { q: 'מי פיתח את מודל ניהול על פי מטרות (MBO)?', opts: ['שאנון', 'קוטר', 'פיטר דרוקר', 'בס ואבוליו'], correct: 2, explanation: 'פיטר דרוקר פיתח את מודל MBO — Management by Objectives' },
+      { q: 'יעד "להגדיל מכירות" — מה חסר בו לפי SMART?', opts: ['S', 'M ו-T', 'A', 'R'], correct: 1, explanation: 'אין מספר מדיד (כמה?) ואין מגבלת זמן — חסרים M ו-T' },
+      { q: 'מה הגישה הנכונה לקביעת יעדים לפי MBO?', opts: ['המנהל קובע יחיד עם ההנהלה', 'העובד קובע בעצמו', 'דיאלוג שיתופי בין מנהל לעובד', 'מחלקת HR קובעת'], correct: 2, explanation: 'MBO מבוסס על דיאלוג שיתופי — לא ציווי מלמעלה' },
+      { q: 'מה היתרון המרכזי של MBO?', opts: ['מגביר שליטת מנהל', 'מגביר מוטיבציה כי עובד שותף ליעדיו', 'מפחית צורך במשוב', 'מאפשר פיטורין קלים יותר'], correct: 1, explanation: 'כשעובד שותף לקביעת יעדיו, המוטיבציה והמחויבות גבוהות יותר' },
+      { q: 'מה ראשי התיבות MBO?', opts: ['Management by Objectives', 'Motivation by Organization', 'Management Based Operations', 'Measurable Business Outcomes'], correct: 0, explanation: 'MBO = Management by Objectives — ניהול על פי מטרות, פיטר דרוקר' },
+    ]
+  },
+
+  // ── 5. יצירת משמעות — וויק ───────────────────────────────────────────────
+  {
+    title: '5. יצירת משמעות — וויק',
+    summary: [
+      { heading: 'Sensemaking — קרל וויק',
+        body: '<p>תהליך <strong>יצירת המשמעות</strong> הוא מרכז התקשורת הארגונית לפי וויק. התקשורת <strong>בונה את המציאות</strong> ולא רק משקפת אותה. האופן שבו מנהל מנסח, מסביר ומספר — קובע כיצד העובדים יתנהגו.</p>' },
+      { heading: 'המנהל כמספר סיפורים',
+        body: '<p>המנהל הוא <strong>"עורך משמעות"</strong> (sense editor) — מסנן, מנסח ומעצב את הנרטיב הארגוני. <strong>אם המנהל לא מספר את הסיפור — השמועות ימלאו את החלל.</strong></p>' },
+      { heading: 'מיסגור מחדש (Reframing)',
+        body: '<p>טכניקה מרכזית: <strong>הפיכת משבר להזדמנות</strong>. במקום "אנחנו מפטרים 20%", אפשר לנסח "אנחנו מתמקדים בצמיחה". הניסוח משפיע על התגובה הרגשית ועל ההתנהגות.</p>' },
+      { heading: 'VUCA — הסביבה המורכבת',
+        body: '<p>מונח שנוצר בצבא האמריקני (1990s) ואומץ לניהול. מתאר את האתגרים שמנהלים מתמודדים איתם בעולם המודרני:</p><ul><li><strong>V — Volatility (תנודתיות)</strong>: שינויים מהירים ובלתי צפויים. קצב שינוי גבוה. לדוגמה: שיבוש טכנולוגי פתאומי, תנודות שוק. התגובה: גמישות ויכולת הסתגלות.</li><li><strong>U — Uncertainty (אי-ודאות)</strong>: קשה לחזות את העתיד. חוסר מידע לקבלת החלטות. לדוגמה: שינויים רגולטוריים, מגפה. התגובה: איסוף מידע, תכנון תרחישים.</li><li><strong>C — Complexity (מורכבות)</strong>: גורמים רבים ומקושרים. קשה להבחין בין סיבה לתוצאה. לדוגמה: שרשרות אספקה גלובליות. התגובה: בניית מומחיות, זיהוי דפוסים.</li><li><strong>A — Ambiguity (עמימות)</strong>: חוסר בהירות לגבי המשמעות. אפשרויות פרשנות מרובות. לדוגמה: כניסה לשוק חדש, אסטרטגיה לא ברורה. התגובה: ניסויים, בדיקת השערות.</li></ul>' },
+      { heading: 'VUCA Prime — התגובה המנהיגותית (Johansen)',
+        body: '<p>Bob Johansen הציע "VUCA Prime" — מסגרת תגובה נגדית לכל איום:</p><ul><li><strong>V (תנודתיות) → Vision (חזון)</strong>: חזון ברור עוגן את הארגון בתוך שינויים. כשהכל נע — החזון קבוע.</li><li><strong>U (אי-ודאות) → Understanding (הבנה)</strong>: השקעה בהבנה עמוקה של הסביבה, הקשבה, מחקר.</li><li><strong>C (מורכבות) → Clarity (בהירות)</strong>: פישוט המסר, מיקוד בעיקר, תקשורת ברורה.</li><li><strong>A (עמימות) → Agility (זריזות)</strong>: יכולת לפעול גם ללא ודאות מלאה, אלתור, למידה תוך כדי.</li></ul><p>עיקרון: <em>בסביבת VUCA, מנהיגות וסגנון תקשורת צריכים להשתנות — הנוסחה הישנה לא עובדת.</em></p>' },
+      { heading: 'קריסת משמעות',
+        body: '<p>כשאנשים לא מבינים מה קורה — <strong>ביצועים, מוטיבציה ותיאום נפגעים</strong>. תפקיד המנהל: למנוע קריסת משמעות ולספק נרטיב מגבש.</p>' },
+    ],
+    cards: [
+      { q: 'מי פיתח את תיאוריית יצירת המשמעות (Sensemaking)?', a: 'קרל וויק' },
+      { q: 'מה תפקיד המנהל לפי תיאוריית Sensemaking?', a: '"עורך משמעות" (sense editor) — מסנן, מנסח ומעצב את הנרטיב הארגוני' },
+      { q: 'מה קורה "אם המנהל לא מספר את הסיפור"?', a: 'השמועות ימלאו את החלל — אנשים ייצרו נרטיבים משלהם' },
+      { q: 'מה הוא Reframing?', a: 'מיסגור מחדש — הפיכת משבר להזדמנות, שינוי האופן שבו מנסחים מצב' },
+      { q: 'מה מייצגת V ב-VUCA ומה התגובה לה?', a: 'Volatility — תנודתיות. תגובה: Vision — חזון ברור שעוגן בתוך שינויים' },
+      { q: 'מה מייצגת U ב-VUCA ומה התגובה לה?', a: 'Uncertainty — אי-ודאות. תגובה: Understanding — הבנה עמוקה, הקשבה, מחקר' },
+      { q: 'מה מייצגת C ב-VUCA ומה התגובה לה?', a: 'Complexity — מורכבות. תגובה: Clarity — פישוט המסר, מיקוד בעיקר, תקשורת ברורה' },
+      { q: 'מה מייצגת A ב-VUCA ומה התגובה לה?', a: 'Ambiguity — עמימות. תגובה: Agility — זריזות, פעולה ללא ודאות מלאה, אלתור' },
+      { q: 'מה VUCA Prime?', a: 'מסגרת תגובה של Johansen: Vision, Understanding, Clarity, Agility — כנגד כל אחת מ-VUCA' },
+      { q: 'מה היא "קריסת משמעות"?', a: 'מצב שבו אנשים לא מבינים מה קורה — ביצועים, מוטיבציה ותיאום נפגעים' },
+      { q: 'מה הטענה המרכזית של וויק על תקשורת?', a: 'תקשורת בונה את המציאות ולא רק משקפת אותה' },
+      { q: 'מדוע יצירת משמעות חשובה במיוחד בסביבת VUCA?', a: 'כי אנשים זקוקים לנרטיב ברור כדי לפעול — ללא משמעות, ביצועים ותיאום נפגעים' },
+    ],
+    quiz: [
+      { q: 'מה הטענה המרכזית של וויק על תקשורת ארגונית?', opts: ['תקשורת מעבירה מידע', 'תקשורת בונה את המציאות', 'תקשורת פותרת קונפליקטים', 'תקשורת מניעה שינוי'], correct: 1, explanation: 'וויק טוען שתקשורת לא רק משקפת מציאות — היא בונה אותה' },
+      { q: 'ארגון עובר שינוי ומנהל לא מתקשר — מה הסיכון לפי וויק?', opts: ['עודף מידע', 'קריסת משמעות ושמועות', 'ביצועים גבוהים מדי', 'עמידה ביעדים'], correct: 1, explanation: 'כשמנהל לא מספר את הסיפור — שמועות ממלאות את החלל וקורסת המשמעות' },
+      { q: 'מנהל מנסח "צמצום" כ"ממקד מאמצים". איזה כלי זה?', opts: ['MBO', 'DISC', 'Reframing', 'SBI'], correct: 2, explanation: 'Reframing = מיסגור מחדש — הפיכת ניסוח שלילי לחיובי שמשפיע על תגובת עובדים' },
+      { q: 'מה ראשי התיבות VUCA?', opts: ['Volatility, Uncertainty, Complexity, Ambiguity', 'Value, Unity, Capacity, Ability', 'Vision, Understanding, Change, Alignment', 'Volatility, Unity, Clarity, Accountability'], correct: 0, explanation: 'VUCA = Volatility (תנודתיות), Uncertainty (אי-ודאות), Complexity (מורכבות), Ambiguity (עמימות)' },
+      { q: 'מה תפקיד המנהל לפי Sensemaking?', opts: ['מנהל תהליכים', 'עורך משמעות — מנסח ומעצב את הנרטיב', 'מפקח על ביצועים', 'מחליט לבד'], correct: 1, explanation: 'וויק: המנהל הוא sense editor — בונה משמעות עבור הארגון' },
+      { q: 'ארגון נכנס לשוק חדש ולא ברור מה משמעות התגובות שמגיעות. איזה מאפיין VUCA זה?', opts: ['Volatility', 'Uncertainty', 'Complexity', 'Ambiguity'], correct: 3, explanation: 'Ambiguity = עמימות — חוסר בהירות לגבי משמעות המידע, פרשנויות מרובות אפשריות' },
+      { q: 'לפי VUCA Prime, מה התגובה הנכונה לתנודתיות (Volatility)?', opts: ['Agility', 'Understanding', 'Vision', 'Clarity'], correct: 2, explanation: 'V→Vision: חזון ברור עוגן את הארגון כשהכל סביבו משתנה — הנגד של תנודתיות' },
+      { q: 'מנהל עומד בפני משבר עם גורמים רבים ומקושרים. מה מאפיין VUCA זה?', opts: ['Volatility', 'Uncertainty', 'Complexity', 'Ambiguity'], correct: 2, explanation: 'Complexity = מורכבות — גורמים רבים ומקושרים שקשה לזהות בהם סיבה-תוצאה ברורה' },
+    ]
+  },
+
+  // ── 6. מנהיגות טרנספורמטיבית ─────────────────────────────────────────────
+  {
+    title: '6. מנהיגות טרנספורמטיבית',
+    summary: [
+      { heading: 'מנהיגות טרנספורמטיבית לעומת טרנזקציונית',
+        body: '<p><strong>טרנזקציונית</strong>: מבוססת על חליפין — תן/קח, פרס/ענש, שליטה על עמידה ביעדים. <strong>טרנספורמטיבית</strong>: מנהיג מעורר <strong>מוטיבציה פנימית</strong>, יוצר שינוי ערכים, חיבור לחזון גדול.</p>' },
+      { heading: '4 ה-I\'s — בס ואבוליו',
+        body: '<ul><li><strong>Individual Consideration (שיקול אישי)</strong> — קואצ\'ינג, מנטורינג, הקשבה לצרכי כל עובד בנפרד</li><li><strong>Inspirational Motivation (מוטיבציה מעוררת)</strong> — חיבור העובדים לחזון גדול ומשמעותי</li><li><strong>Intellectual Stimulation (גירוי אינטלקטואלי)</strong> — עידוד חשיבה חדשה, הטלת ספק בהנחות</li><li><strong>Idealized Influence (השפעה אידיאלית)</strong> — "Walk the Talk", המנהיג כדגם לחיקוי</li></ul>' },
+      { heading: 'ניהול עובדים מרחוק — סינקלייר ועמיתים (2021)',
+        body: '<p>עקרונות מנהיגות טרנספורמטיבית ניתנים ליישום גם מרחוק: <strong>Virtual Huddles</strong> (כינוסים וירטואליים יומיים קצרים), <strong>Virtual Observation</strong> (מעקב וירטואלי), <strong>פגישות 1:1 חודשיות</strong>. האתגר: שמירה על חיבור אישי.</p>' },
+      { heading: 'ציטוט מפתח — Simon Sinek',
+        body: '<p>"Leadership is not about being in charge. It\'s about taking care of those in your charge."<br>מנהיגות היא אחריות על האנשים, לא שליטה.</p>' },
+    ],
+    cards: [
+      { q: 'מה ההבדל בין מנהיגות טרנספורמטיבית לטרנזקציונית?', a: 'טרנזקציונית = תן/קח, פרס/ענש. טרנספורמטיבית = מוטיבציה פנימית, חיבור לחזון גדול' },
+      { q: 'מה מייצג Individual Consideration?', a: 'שיקול אישי — קואצ\'ינג ומנטורינג, הקשבה לצרכי כל עובד בנפרד' },
+      { q: 'מה מייצג Inspirational Motivation?', a: 'מוטיבציה מעוררת — חיבור העובדים לחזון גדול ומשמעותי' },
+      { q: 'מה מייצג Intellectual Stimulation?', a: 'גירוי אינטלקטואלי — עידוד חשיבה חדשה, הטלת ספק בהנחות' },
+      { q: 'מה מייצג Idealized Influence?', a: 'השפעה אידיאלית — Walk the Talk, המנהיג כדגם לחיקוי' },
+      { q: 'מה Virtual Huddles?', a: 'כינוסים וירטואליים יומיים קצרים — כלי לניהול עובדים מרחוק' },
+      { q: 'מי פיתח את 4 ה-I\'s של מנהיגות טרנספורמטיבית?', a: 'בס ואבוליו' },
+      { q: 'מה ציטוט Sinek על מנהיגות?', a: '"Leadership is about taking care of those in your charge" — מנהיגות היא אחריות, לא שליטה' },
+    ],
+    quiz: [
+      { q: 'מנהל מעניק בונוס לעובד שעמד ביעד. איזה סגנון מנהיגות זה?', opts: ['טרנספורמטיבי', 'טרנזקציוני', 'Sensemaking', 'DISC'], correct: 1, explanation: 'פרס על ביצועים = מנהיגות טרנזקציונית — מבוססת על חליפין' },
+      { q: 'מנהל מחבר את הצוות לחזון חברתי גדול. איזה I מה-4 זה?', opts: ['Individual Consideration', 'Intellectual Stimulation', 'Inspirational Motivation', 'Idealized Influence'], correct: 2, explanation: 'Inspirational Motivation = חיבור לחזון גדול ומשמעותי' },
+      { q: 'מנהל שלא עושה מה שהוא אומר — איזה I הוא כושל בו?', opts: ['Individual Consideration', 'Idealized Influence', 'Inspirational Motivation', 'Intellectual Stimulation'], correct: 1, explanation: 'Idealized Influence = Walk the Talk — המנהיג כדגם לחיקוי. אם לא מקיים — כושל בזה' },
+      { q: 'מה הכלי העיקרי לניהול עובדים מרחוק לפי סינקלייר (2021)?', opts: ['מייל יומי', 'Virtual Huddles ופגישות 1:1', 'ביקורת שבועית בכתב', 'DISC אונליין'], correct: 1, explanation: 'סינקלייר מדגיש Virtual Huddles יומיים ופגישות 1:1 חודשיות לניהול מרחוק' },
+      { q: 'מה עיקר ההבדל בין מנהיגות טרנספורמטיבית לטרנזקציונית?', opts: ['טרנספורמטיבית משלמת יותר', 'טרנספורמטיבית מעוררת מוטיבציה פנימית וחיבור לחזון', 'טרנזקציונית מתמקדת בחזון', 'אין הבדל מהותי'], correct: 1, explanation: 'טרנספורמטיבית: מוטיבציה פנימית + חזון. טרנזקציונית: תמריצים חיצוניים + ציות' },
+    ]
+  },
+
+  // ── 7. הון חברתי וחילופי חברתיים ─────────────────────────────────────────
+  {
+    title: '7. הון חברתי וחילופי חברתיים',
+    summary: [
+      { heading: 'תיאוריית החילופי החברתיים — הומנס ובלאו',
+        body: '<p>יחסים ארגוניים מבוססים על <strong>חילוף של משאבים כלכליים וחברתיים</strong>. העיקרון המרכזי: <strong>נורמת ההדדיות</strong> — אנשים נוטים "להחזיר" מה שנותנים להם. הבסיס: אמון.</p><p>"יחסים ארגוניים = חילוף של משאבים כלכליים + חברתיים."</p>' },
+      { heading: 'OCB — התנהגות אזרחות ארגונית',
+        body: '<p>Organizational Citizenship Behavior — <strong>התנהגות וולונטרית</strong> שמעבר לדרישות התפקיד הרשמי. עובד שעוזר לעמיתים, לוקח אחריות ומיוזמה — OCB גבוה. מוביל לתוצאות ארגוניות טובות יותר.</p>' },
+      { heading: 'החוזה הפסיכולוגי',
+        body: '<p>ציפיות <strong>לא כתובות</strong> שיש לעובד מהארגון. כשהחוזה נשבר — אמון ומחויבות נפגעים. לדוגמה: עובד מצפה לקידום ולא מקבל → תחושת בגידה.</p>' },
+      { heading: '"מטבעות חברתיות" — מה ניתן לתת?',
+        body: '<ul><li>הכרה פומבית (ציבורית)</li><li>גמישות ועצמאות</li><li>שיתוף במידע ניהולי</li><li>זמן ותשומת לב אישית</li><li>הזדמנויות צמיחה</li></ul>' },
+    ],
+    cards: [
+      { q: 'מה הבסיס של תיאוריית החילופי החברתיים?', a: 'נורמת ההדדיות — אנשים "מחזירים" מה שנותנים להם, מבוסס על אמון' },
+      { q: 'מי פיתח את תיאוריית החילופי החברתיים?', a: 'הומנס ובלאו' },
+      { q: 'מהי OCB?', a: 'Organizational Citizenship Behavior — התנהגות וולונטרית מעבר לדרישות התפקיד הרשמי' },
+      { q: 'מהו "החוזה הפסיכולוגי"?', a: 'ציפיות לא כתובות שיש לעובד מהארגון — כשנשבר, אמון ומחויבות נפגעים' },
+      { q: 'תן דוגמה ל"מטבע חברתי" שמנהל יכול לתת', a: 'הכרה פומבית, גמישות, שיתוף במידע ניהולי, זמן ותשומת לב אישית' },
+      { q: 'מה קורה כשהחוזה הפסיכולוגי נשבר?', a: 'אמון ומחויבות נפגעים — תחושת בגידה בעובד' },
+      { q: 'מה נורמת ההדדיות?', a: 'אנשים נוטים להחזיר מה שנותנים להם — בסיס החילוף החברתי' },
+    ],
+    quiz: [
+      { q: 'עובד שעוזר לעמית ולוקח אחריות מעבר לתפקידו — מה זה?', opts: ['OCB', 'DISC', 'MBO', 'SBI'], correct: 0, explanation: 'OCB = Organizational Citizenship Behavior — התנהגות וולונטרית מעבר לדרישות הרשמיות' },
+      { q: 'עובד ציפה לקידום ולא קיבל. מה נשבר?', opts: ['SMART', 'החוזה הפסיכולוגי', 'מודל DISC', 'נורמת ההדדיות'], correct: 1, explanation: 'החוזה הפסיכולוגי = ציפיות לא כתובות. כשלא מתקיים, אמון נפגע' },
+      { q: 'מה עקרון ההדדיות בחילופי חברתיים?', opts: ['אנשים עושים רק מה שמשלמים להם', 'אנשים נוטים "להחזיר" מה שנותנים להם', 'אין חשיבות לקשרים חברתיים', 'רק תגמול כספי מניע'], correct: 1, explanation: 'נורמת ההדדיות: אנשים נוטים להחזיר מה שניתן להם — בסיס החילוף החברתי' },
+      { q: 'מהי "מטבע חברתית" שמנהל יכול להשתמש בה?', opts: ['העלאת שכר בלבד', 'הכרה פומבית ושיתוף במידע', 'פיטורים של עמיתים', 'הגדלת שעות עבודה'], correct: 1, explanation: 'מטבעות חברתיות: הכרה פומבית, גמישות, שיתוף במידע ניהולי — לא רק כסף' },
+      { q: 'מי פיתח את תיאוריית החילופי החברתיים?', opts: ['דרוקר ובס', 'הומנס ובלאו', 'וויק ושרם', 'קוטר וסינק'], correct: 1, explanation: 'הומנס ובלאו פיתחו את תיאוריית החילוף החברתי — יחסים כחילוף משאבים' },
+    ]
+  },
+
+  // ── 8. הובלת שינוי — קוטר ────────────────────────────────────────────────
+  {
+    title: '8. הובלת שינוי — קוטר',
+    summary: [
+      { heading: '8 השלבים של קוטר',
+        body: '<ol><li><strong>יצירת דחיפות</strong> — לא פאניקה, אלא תחושה של "חייבים לזוז עכשיו"</li><li><strong>גיבוש קואליציה</strong> — קבוצת מנהיגים מניעה את השינוי</li><li><strong>פיתוח חזון ואסטרטגיה</strong> — לאן הולכים ואיך</li><li><strong>תקשור החזון</strong> — ×10, כל הערוצים</li><li><strong>העצמת עובדים</strong> — הסרת מכשולים</li><li><strong>הצלחות לטווח קצר</strong> — ניצחונות מוקדמים שמחזקים אמון</li><li><strong>איחוד הישגים</strong> — בניית על ההצלחות</li><li><strong>עיגון בתרבות הארגונית</strong> — השינוי הופך לנורמה</li></ol>' },
+      { heading: 'תקשורת בשינוי',
+        body: '<p>תקשורת בתהליך שינוי חייבת להיות: <strong>עקבית</strong>, <strong>רב-ערוצית</strong>, <strong>דו-כיוונית</strong>, ו<strong>מאסיבית</strong> (10 פעמים יותר ממה שנדמה מספיק). <em>מנהיגים תקשרו חזון 10 פעמים — עובדים שמעו פעם אחת.</em></p>' },
+      { heading: 'למה שינויים נכשלים?',
+        body: '<ul><li>דילוג על שלבים</li><li>חוסר דחיפות אמיתית</li><li>קואליציה חלשה</li><li>תקשורת לא מספקת של החזון</li><li>לא מציגים הצלחות מוקדמות</li></ul>' },
+    ],
+    cards: [
+      { q: 'מה השלב הראשון בקוטר?', a: 'יצירת דחיפות — לא פאניקה, אלא תחושת "חייבים לזוז עכשיו"' },
+      { q: 'מה קוטר אומר על תקשורת החזון?', a: 'תקשרו ×10 — מנהיגים תקשרו פעמים רבות, עובדים שמעו פחות ממה שנדמה' },
+      { q: 'מה השלב השמיני של קוטר?', a: 'עיגון בתרבות הארגונית — השינוי הופך לנורמה קבועה' },
+      { q: 'מה הכשל הנפוץ ביותר בתהליכי שינוי לפי קוטר?', a: 'דילוג על שלבים — במיוחד חוסר דחיפות ותקשורת לא מספקת' },
+      { q: 'מה מטרת "הצלחות לטווח קצר" (שלב 6)?', a: 'ניצחונות מוקדמים שמחזקים אמון ומוטיבציה להמשך השינוי' },
+      { q: 'מה "קואליציה" בהקשר של קוטר?', a: 'קבוצת מנהיגים שמניעה יחד את תהליך השינוי' },
+      { q: 'כמה שלבים יש במודל קוטר?', a: '8 שלבים' },
+    ],
+    quiz: [
+      { q: 'לפי קוטר, מה צריך ליצור בשלב הראשון?', opts: ['פאניקה', 'דחיפות — תחושת חייבים לזוז', 'תוכנית מפורטת', 'פיטורים'], correct: 1, explanation: 'קוטר מבחין בין פאניקה (גרועה) לדחיפות (טובה) — תחושת "חייבים לזוז עכשיו"' },
+      { q: 'ארגון עובר שינוי ומנהלים מתקשרים חזון 3 פעמים. מה קוטר היה אומר?', opts: ['מספיק', 'צריך ×10 לפחות', 'יותר מדי', 'צריך רק פעם אחת רשמית'], correct: 1, explanation: 'קוטר: תקשרו חזון ×10 — עובדים שמעו פחות ממה שנדמה לכם' },
+      { q: 'מה מטרת "הצלחות לטווח קצר" בתהליך שינוי?', opts: ['להסיח דעת מהשינוי', 'לחזק אמון ומוטיבציה', 'להחליף את החזון', 'לבטל את השינוי'], correct: 1, explanation: 'ניצחונות מוקדמים מחזקים אמון ומוטיבציה — מוכיחים שהשינוי עובד' },
+      { q: 'מה השלב האחרון (שמיני) בקוטר?', opts: ['יצירת דחיפות', 'עיגון בתרבות', 'גיבוש קואליציה', 'הצלחות מוקדמות'], correct: 1, explanation: 'שלב 8 = עיגון בתרבות הארגונית — השינוי הופך לנורמה ולא חוזרים לאחור' },
+      { q: 'מדוע שינויים נכשלים לפי קוטר?', opts: ['יש יותר מדי שלבים', 'דילוג על שלבים וחוסר דחיפות אמיתית', 'תקשורת יותר מדי', 'קואליציה גדולה מדי'], correct: 1, explanation: 'הסיבה הנפוצה לכישלון: דילוג על שלבים, במיוחד שלב הדחיפות ותקשורת החזון' },
+    ]
+  },
+
+  // ── 9. חלון ג'והרי ומשוב SBI ─────────────────────────────────────────────
+  {
+    title: "9. חלון ג'והרי ומשוב SBI",
+    summary: [
+      { heading: "חלון ג'והרי — לופט ואינגהאם (1955)",
+        body: '<p>מטריצה 2×2 המציגה 4 "חלונות" לפי מה ידוע לאדם על עצמו לעומת מה ידוע לאחרים:</p><ul><li><strong>פתוח</strong> — ידוע לי וידוע לאחרים</li><li><strong>נסתר</strong> — ידוע לי, לא ידוע לאחרים</li><li><strong>עיוור</strong> — לא ידוע לי, ידוע לאחרים</li><li><strong>לא ידוע</strong> — לא ידוע לי ולא לאחרים</li></ul>' },
+      { heading: 'כיצד מרחיבים את ה"פתוח"?',
+        body: '<ul><li><strong>חשיפה עצמית</strong> — שיתוף מידע על עצמי עם אחרים (מקטין "נסתר")</li><li><strong>בקשת משוב</strong> — בקשת מידע מאחרים על עצמי (מקטין "עיוור")</li><li><strong>חקירה משותפת</strong> — גילוי יחד מה לא ידוע לאף אחד</li></ul>' },
+      { heading: 'מודל SBI — CCL (1990)',
+        body: '<p><strong>S — Situation</strong>: "בישיבה של אתמול..."<br><strong>B — Behavior</strong>: "כשסגרת את הלפטופ..."<br><strong>I — Impact</strong>: "הרגשתי שלא מוקדשת תשומת לב..."<br><strong>(A — Action)</strong>: "בפעם הבאה, אשמח אם..."</p><p>עיקרון: מתייחסים <strong>להתנהגות ולא לאישיות</strong>. <strong>תיאורי ולא שיפוטי</strong>.</p>' },
+      { heading: 'מיתוס ה"סנדוויץ\'" — HBR',
+        body: '<p>משוב "חיובי-שלילי-חיובי" — <strong>אפקטיביות נמוכה</strong>. הבעיות: מפחית אמינות, מטשטש המסר, נתפס כמניפולציה. עדיף: משוב ישיר ועם אכפתיות.</p>' },
+    ],
+    cards: [
+      { q: "מה 4 הרביעים של חלון ג'והרי?", a: 'פתוח (ידוע לי+אחרים), נסתר (ידוע לי בלבד), עיוור (ידוע לאחרים), לא ידוע (לא ידוע לאף אחד)' },
+      { q: "מי פיתח את חלון ג'והרי ומתי?", a: 'לופט ואינגהאם, 1955' },
+      { q: "כיצד מרחיבים את הרביע ה'פתוח' בחלון ג'והרי?", a: 'חשיפה עצמית (מקטינה "נסתר") + בקשת משוב (מקטינה "עיוור")' },
+      { q: 'מה ראשי התיבות SBI?', a: 'Situation (מצב), Behavior (התנהגות), Impact (השפעה)' },
+      { q: 'מה העיקרון המרכזי של מודל SBI?', a: 'מתייחסים להתנהגות ולא לאישיות, תיאורי ולא שיפוטי' },
+      { q: 'מדוע משוב "סנדוויץ\'" לא אפקטיבי לפי HBR?', a: 'מפחית אמינות, מטשטש המסר, נתפס כמניפולציה' },
+      { q: 'מה ה-A שנוסף ל-SBI?', a: 'Action — בקשה לפעולה עתידית: "בפעם הבאה, אשמח אם..."' },
+    ],
+    quiz: [
+      { q: "עמית לא יודע שהוא מפריע לאחרים בדיבורים. איזה רביע ג'והרי זה?", opts: ['פתוח', 'נסתר', 'עיוור', 'לא ידוע'], correct: 2, explanation: 'עיוור = לא ידוע לי, ידוע לאחרים — עמית לא מודע למשהו שאחרים רואים' },
+      { q: 'מנהל מסתיר ממעסיקיו שהוא מחפש עבודה — איזה רביע?', opts: ['פתוח', 'נסתר', 'עיוור', 'לא ידוע'], correct: 1, explanation: 'נסתר = ידוע לי, לא ידוע לאחרים — מידע שאני בוחר לא לשתף' },
+      { q: 'מנהל אומר: "בישיבה אתמול, כשהפסקת להקשיב, הרגשתי שלא חשוב לך." זה מודל?', opts: ['DISC', 'SBI', 'קוטר', 'Sensemaking'], correct: 1, explanation: 'SBI: Situation (ישיבה אתמול), Behavior (הפסקת להקשיב), Impact (הרגשתי שלא חשוב לך)' },
+      { q: 'מדוע משוב "סנדוויץ\'" לא אפקטיבי?', opts: ['כי הוא קצר מדי', 'כי הוא מטשטש המסר ונתפס כמניפולציה', 'כי הוא שלילי מדי', 'כי הוא לא כולל SBI'], correct: 1, explanation: 'HBR: סנדוויץ\' מטשטש המסר, מפחית אמינות ונתפס כמניפולציה' },
+      { q: 'מה מאפיין משוב SBI תקין?', opts: ['ביקורת על אישיות', 'שיפוטי ורגשי', 'תיאורי, על התנהגות ספציפית, עם השפעה', 'כללי ועל דפוסים'], correct: 2, explanation: 'SBI = תיאורי, על התנהגות ספציפית (לא אישיות), עם השפעה קונקרטית' },
+    ]
+  },
+
+  // ── 10. שמועות בתקשורת ארגונית ───────────────────────────────────────────
+  {
+    title: '10. שמועות בתקשורת ארגונית',
+    summary: [
+      { heading: 'הגדרת שמועה — דיפונצו ובורדיה (2007)',
+        body: '<p>שמועה היא <strong>מידע לא מאומת</strong>, רלוונטי מבחינה אינסטרומנטלית, המסתובב בהקשרים של <strong>עמימות, סכנה, או איום</strong>. שמועות מופיעות כשאנשים חשים חוסר ביטחון וחוסר מידע.</p>' },
+      { heading: '4 מניעים לשמועות — סאדהיר (2018)',
+        body: '<ul><li><strong>ניהול חרדה</strong> — ניסיון להפחית אי-ודאות</li><li><strong>שיתוף מידע</strong> — "אני יודע משהו שאתה לא"</li><li><strong>ניהול קשרים</strong> — חיזוק קשרים חברתיים ע"י שיתוף</li><li><strong>שיפור עצמי</strong> — רצון להיתפס כבעל מידע/השפעה</li></ul>' },
+      { heading: '6 אסטרטגיות להתמודדות עם שמועות',
+        body: '<ul><li><strong>קו חם לשמועות</strong> — ערוץ ישיר לשאלות ותשובות</li><li><strong>הכחשה</strong> (מוגבלת!) — לעיתים מגבירה תשומת לב</li><li><strong>הפרכה</strong> — מול המקור, המסר, או ההקשר</li><li><strong>חיזוק</strong> — חיזוק מידע הנוגד את השמועה</li><li><strong>קבלה ופיצוי</strong> — הודאה בבעיה ופתרונה</li><li><strong>תרופות משפטיות</strong> — שמירה לאחרון, אמצעי קיצוני</li></ul>' },
+      { heading: 'שמועות בארגון — מה המנהל עושה?',
+        body: '<p>ריק מידע = מרחב לשמועות. <strong>פתרון: תקשורת פרואקטיבית</strong> — מלא את החלל לפני שהשמועות עושות זאת. ספק מידע עקבי, שקוף ותכוף גם כשאין בשורות חדשות.</p>' },
+    ],
+    cards: [
+      { q: 'מה הגדרת שמועה לפי דיפונצו ובורדיה (2007)?', a: 'מידע לא מאומת, רלוונטי אינסטרומנטלית, המסתובב בהקשרי עמימות, סכנה או איום' },
+      { q: 'מה 4 המניעים לשמועות לפי סאדהיר?', a: 'ניהול חרדה, שיתוף מידע, ניהול קשרים, שיפור עצמי' },
+      { q: 'מה הכוונה ב"ניהול חרדה" כמניע לשמועות?', a: 'ניסיון להפחית אי-ודאות — כשאנשים לא יודעים מה יקרה, יוצרים הסברים משלהם' },
+      { q: 'מה אסטרטגיית "קו חם לשמועות"?', a: 'ערוץ ישיר ורשמי לשאלות ותשובות בנושא השמועה' },
+      { q: 'מדוע "הכחשה" לבדה לא אפקטיבית?', a: 'לעיתים מגבירה תשומת לב לשמועה ויוצרת אפקט הפוך' },
+      { q: 'מה הפתרון הפרואקטיבי לשמועות?', a: 'תקשורת מונעת — מלא את ריק המידע לפני שהשמועות עושות זאת' },
+      { q: 'מהו מניע "שיפור עצמי" בהפצת שמועות?', a: 'רצון להיתפס כבעל מידע ומשפיע — "אני יודע" מעלה מעמד חברתי' },
+    ],
+    quiz: [
+      { q: 'ארגון עובר ארגון מחדש ולא מעדכן עובדים. מה צפוי?', opts: ['עובדים יחכו בשקט', 'שמועות יתפשטו למלא ריק המידע', 'ביצועים ישתפרו', 'OCB יגדל'], correct: 1, explanation: 'ריק מידע = קרקע פורייה לשמועות — אנשים ממלאים אי-ודאות בפרשנויות משלהם' },
+      { q: 'עובד מפיץ שמועה כי "כולם יודעים שאני מחובר". מה המניע לפי סאדהיר?', opts: ['ניהול חרדה', 'שיתוף מידע', 'שיפור עצמי', 'ניהול קשרים'], correct: 2, explanation: 'שיפור עצמי = רצון להיתפס כבעל מידע ומשפיע — מניע להפצת שמועות' },
+      { q: 'מה ההגדרה לשמועה לפי דיפונצו ובורדיה?', opts: ['מידע שקרי', 'מידע לא מאומת, רלוונטי, בהקשר של אי-ודאות', 'ידיעה עיתונאית לא מאומתת', 'שיחה בין שני אנשים'], correct: 1, explanation: 'שמועה = מידע לא מאומת + רלוונטיות אינסטרומנטלית + הקשר של עמימות/סכנה/איום' },
+      { q: 'איזו אסטרטגיה מומלצת כאמצעי אחרון נגד שמועות?', opts: ['קו חם', 'הפרכה', 'חיזוק', 'תרופות משפטיות'], correct: 3, explanation: 'תרופות משפטיות שמורות לאחרון — הן אמצעי קיצוני שיש להימנע ממנו אם אפשר' },
+      { q: 'מה הפתרון הפרואקטיבי הטוב ביותר לשמועות?', opts: ['לפטר את מפיצי השמועות', 'למלא את ריק המידע בתקשורת שקופה ועקבית', 'לשתוק ולחכות שיעבור', 'להכחיש בתוקף'], correct: 1, explanation: 'תקשורת פרואקטיבית = מלא את החלל לפני שהשמועות עושות זאת' },
+    ]
+  },
+
+  // ── 11. תקשורת משבר פנים-ארגונית ─────────────────────────────────────────
+  {
+    title: '11. תקשורת משבר פנים-ארגונית',
+    summary: [
+      { heading: 'הגדרה ורקע — Heide & Simonsson (2021)',
+        body: '<p>מחקר מ-Journal of Communication Management על תקשורת פנים-ארגונית בזמן משבר (COVID-19). שאלת המחקר: כיצד ניתן להבין את גישת הארגון לתקשורת משבר פנימית, ומה מאפיין את תקשורת המנהיגות?<br>"What was that all about?" — ציטוט וויק על רגע ה<strong>קריסה הקוסמולוגית</strong>: "לא הייתי כאן מעולם, אין לי מושג איפה אני, ואין לי מושג מי יכול לעזור לי."</p>' },
+      { heading: 'שתי גישות ל-ICC (Internal Crisis Communication)',
+        body: '<ul><li><strong>גישה מנהלתית (Managerialistic)</strong>: מנהלים = מפקדים, עובדים = מקבלי מסרים. תקשורת = העברת מידע מלמעלה למטה. נשענת על <em>פונקציונליזם</em>.</li><li><strong>גישה תהליכית (Process)</strong>: עובדים = שותפי תקשורת פעילים. תקשורת = בניית מציאות. נשענת על <em>בנייה חברתית</em>. המנהל <strong>מאלתר, שומע, מנהל דיאלוג</strong>.</li></ul>' },
+      { heading: 'חברות עובדים תקשורתית (Communicative Coworkership)',
+        body: '<p>עובדים הם לא רק מקבלי מסרים אלא <strong>תקשורתנים פעילים</strong> ב-3 שלבי המשבר:</p><ul><li><strong>לפני המשבר</strong>: זיהוי אותות אזהרה מוקדמים</li><li><strong>במהלך</strong>: יישום החלטות + מעדכנים מנהלים + שגרירים מול בעלי עניין חיצוניים</li><li><strong>אחרי</strong>: שיתוף ניסיון, למידה ארגונית, מגינים על תדמית</li></ul>' },
+      { heading: 'בעיות ממושמעות לעומת בעיות עקשניות',
+        body: '<ul><li><strong>Tame Problem (ממושמעת)</strong>: אי-ודאות מוגבלת, כבר התרחש בעבר, ניתן לנהל — המנהל נותן תשובות</li><li><strong>Wicked Problem (עקשנית)</strong>: מורכבת, עמומה, ללא פתרון אחד — דורשת <strong>מנהיגות + אלתור</strong>, לא רק ניהול</li></ul><p>מגפת COVID-19 היא דוגמה קלאסית ל-Wicked Problem.</p>' },
+      { heading: '3 סוגי עמימות — Carroll (2015)',
+        body: '<ul><li><strong>עמימות בסיסית</strong>: אין קטגוריות להגדיר מה קורה — לא יודעים כיצד לנסח</li><li><strong>עמימות סיבתית</strong>: יש קטגוריות אבל לא ניתן לקשר סיבה-תוצאה</li><li><strong>עמימות תפקידית</strong>: לא ברור מי אחראי על מה</li></ul><p>רעיון מפתח: "חדשות רעות לא עולות בקלות בהיררכיה — עמימות בסיסית מאפשרת מסגור מחדש שלהן."</p>' },
+      { heading: 'Walk the Talk — פער תרבותי',
+        body: '<p>ממצא מרכזי של המחקר: ארגונים <strong>מצהירים</strong> על ערך העובדים אך <strong>בפועל</strong> לא מעודדים תרבות של חברות עובדים תקשורתית. <strong>המפתח להצלחה: מנהלים שעושים את מה שהם אומרים.</strong></p>' },
+    ],
+    cards: [
+      { q: 'מי כתבו את "What was that all about" ומתי?', a: 'Heide & Simonsson, 2021 — Journal of Communication Management' },
+      { q: 'מה ההבדל בין גישה מנהלתית לגישה תהליכית ב-ICC?', a: 'מנהלתית = מנהל מפקד, עובד מקבל. תהליכית = עובד שותף פעיל, מנהל מאלתר ושומע' },
+      { q: 'מהי "חברות עובדים תקשורתית"?', a: 'עובדים כתקשורתנים פעילים — לפני, במהלך ואחרי המשבר — לא רק מקבלי מסרים' },
+      { q: 'מה Tame Problem לעומת Wicked Problem?', a: 'Tame = מוגדר, פתרון ידוע, ניהול. Wicked = מורכב, עמום, דורש מנהיגות ואלתור' },
+      { q: 'מה 3 סוגי העמימות לפי Carroll (2015)?', a: 'בסיסית (אין קטגוריות), סיבתית (אין קשר סיבה-תוצאה), תפקידית (לא ברור מי אחראי)' },
+      { q: 'מה הממצא המרכזי של Heide & Simonsson?', a: 'פער בין תרבות מוצהרת למתקיימת — ארגונים מצהירים על ערך עובדים אך לא מיישמים. המפתח: Walk the Talk' },
+      { q: 'מה "קריסה קוסמולוגית" לפי וויק?', a: 'מצב שבו הכל מפסיק להיות הגיוני — "לא הייתי כאן מעולם, אין לי מושג איפה אני"' },
+    ],
+    quiz: [
+      { q: 'מה מאפיין את הגישה המנהלתית (Managerialistic) לתקשורת משבר?', opts: ['עובדים כשותפים פעילים', 'מנהל מאלתר ושומע', 'תקשורת העברת מידע מלמעלה למטה', 'דיאלוג ושיתוף'], correct: 2, explanation: 'גישה מנהלתית = מנהל כמפקד, עובד כמקבל מסרים, תקשורת = שידור מידע' },
+      { q: 'עובד מגלה בעיה בשטח ומדווח למנהל לפני שהפכה למשבר — זה דוגמה ל?', opts: ['Wicked Problem', 'חברות עובדים תקשורתית לפני משבר', 'גישה מנהלתית', 'עמימות תפקידית'], correct: 1, explanation: 'זיהוי אותות אזהרה מוקדמים = תפקיד עובדים בשלב הפרה-משבר לפי Heide & Simonsson' },
+      { q: 'מגפה עולמית היא דוגמה ל?', opts: ['Tame Problem', 'עמימות סיבתית', 'Wicked Problem', 'ICC מנהלתית'], correct: 2, explanation: 'Wicked Problem = מורכב, עמום, ללא פתרון אחד ידוע — COVID-19 הוא דוגמה מרכזית' },
+      { q: 'ארגון מצהיר "העובדים הם המשאב החשוב ביותר" אך בפועל לא מאפשר להם לתקשר בחופשיות. מה זה?', opts: ['Walk the Talk', 'פער בין תרבות מוצהרת למתקיימת', 'Communicative Coworkership', 'Tame Problem'], correct: 1, explanation: 'ממצא מרכזי של המחקר: פער בין espoused culture לenacted culture' },
+      { q: 'מנהל שלא יודע מי אחראי על היבט מסוים בזמן משבר — זה איזה סוג עמימות?', opts: ['בסיסית', 'סיבתית', 'תפקידית', 'קוסמולוגית'], correct: 2, explanation: 'עמימות תפקידית (Carroll) = לא ברור מי אחראי על מה ומי צריך להיות מעורב' },
+    ]
+  },
+
+  // ── 12. תקשורת ארגונית בניהול שינוי ──────────────────────────────────────
+  {
+    title: '12. תקשורת ארגונית בניהול שינוי',
+    summary: [
+      { heading: 'המאמר — Taruchaín-Pozo et al. (2026)',
+        body: '<p>סקירת ספרות נרטיבית (Narrative Review) שפורסמה ב-Multidisciplinary Reviews. מנתחת 52 מאמרים על תקשורת ארגונית ותפקידה בניהול שינוי. שלוש שאלות מחקר: מגמות, אתגרים, יתרונות.</p>' },
+      { heading: '5 כיווני תקשורת ארגונית',
+        body: '<ul><li><strong>מלמעלה למטה (Downward)</strong> — מנהלים לעובדים: מדיניות, הנחיות, משימות</li><li><strong>מלמטה למעלה (Upward)</strong> — עובדים למנהלים: רעיונות, חששות, משוב דרך סקרים ופגישות</li><li><strong>אופקי (Horizontal)</strong> — בין עמיתים באותה רמה: קואורדינציה ושיתוף פעולה</li><li><strong>אלכסוני (Diagonal)</strong> — בין רמות ומחלקות שונות: מקדם חדשנות ומעבר ידע</li><li><strong>חיצוני (External)</strong> — לקוחות, ספקים, בעלי עניין: ניהול מוניטין ותדמית</li></ul>' },
+      { heading: 'מגמות עכשוויות בתקשורת ארגונית',
+        body: '<ul><li><strong>דיגיטציה ורב-ערוציות</strong> — פלטפורמות דיגיטליות ורשתות חברתיות</li><li><strong>שקיפות ואותנטיות</strong> — עובדים ולקוחות מצפים לכנות</li><li><strong>Business Storytelling</strong> — נרטיבים ארגוניים ככלי תקשורת אסטרטגי</li><li><strong>פרסונליזציה</strong> — התאמת המסר לקהל היעד הספציפי</li><li><strong>גיוון והכלה</strong> — שפה ומסרים שמכילים כולם</li></ul>' },
+      { heading: 'אתגרים מרכזיים',
+        body: '<ul><li><strong>התנגדות לשינוי</strong> — חסם הנפוץ ביותר (נדרשת תקשורת מתמשכת)</li><li><strong>פיצול מידע</strong> — חוסר עקביות בין מסרים פנימיים וחיצוניים</li><li><strong>רוויית מידע</strong> — עודף מסרים שמוריד קשב</li><li><strong>יישור פנים-חוץ</strong> — מסרים פנימיים וחיצוניים צריכים להיות עקביים</li></ul>' },
+      { heading: 'תקשורת כזרז לשינוי',
+        body: '<p>תקשורת <strong>ברורה ומתמשכת</strong> שומרת על יישור הארגון עם מטרות השינוי ומתגברת על התנגדות. חשוב: <strong>תקשורת דו-כיוונית</strong> — לא רק להודיע, אלא להקשיב ולתת בעלות לעובדים. עם זאת, תקשורת לבדה אינה מספיקה — נדרשות גם מנהיגות, הכשרה ותרבות ארגונית תומכת.</p>' },
+    ],
+    cards: [
+      { q: 'מה 5 כיווני התקשורת הארגונית?', a: 'מלמעלה למטה, מלמטה למעלה, אופקי, אלכסוני, חיצוני' },
+      { q: 'מהי תקשורת אלכסונית?', a: 'תקשורת בין רמות ומחלקות שונות — מקדמת חדשנות ומעבר ידע בין אגפים' },
+      { q: 'מהי תקשורת אופקית?', a: 'חילופי מידע בין עמיתים באותה רמה היררכית — לקואורדינציה ושיתוף פעולה' },
+      { q: 'מה Business Storytelling?', a: 'שימוש בנרטיבים ארגוניים ככלי תקשורת אסטרטגי — מגמה מרכזית לפי המאמר' },
+      { q: 'מה האתגר הנפוץ ביותר בתקשורת ארגונית בזמן שינוי?', a: 'התנגדות לשינוי — נדרשת תקשורת מתמשכת, דו-כיוונית ומעניקת בעלות לעובדים' },
+      { q: 'מדוע תקשורת לבדה אינה מספיקה לשינוי?', a: 'נדרשות גם מנהיגות אפקטיבית, הכשרה מתאימה ותרבות ארגונית תומכת שינוי' },
+      { q: 'מה הקשר בין יישור פנים-חוץ לאתגרי תקשורת?', a: 'חוסר עקביות בין מסרים פנימיים לחיצוניים יוצר בלבול — במיוחד בתהליכי שינוי' },
+    ],
+    quiz: [
+      { q: 'מנהל שולח הנחיות לעובדים מהמטה. איזה כיוון תקשורת זה?', opts: ['אופקי', 'אלכסוני', 'מלמעלה למטה', 'חיצוני'], correct: 2, explanation: 'Downward = מלמעלה למטה: מנהלים לעובדים — מדיניות, הנחיות, משימות' },
+      { q: 'עובד שולח סקר משוב להנהלה. איזה כיוון תקשורת זה?', opts: ['מלמטה למעלה', 'אופקי', 'אלכסוני', 'מלמעלה למטה'], correct: 0, explanation: 'Upward = מלמטה למעלה: עובדים מעלים רעיונות, חששות ומשוב למנהלים' },
+      { q: 'מנהל שיווק מתאם ישירות עם מנהל פיתוח מחלקות שונות. איזה כיוון?', opts: ['אופקי', 'אלכסוני', 'מלמעלה למטה', 'חיצוני'], correct: 1, explanation: 'Diagonal = אלכסוני: בין רמות ומחלקות שונות — מקדם חדשנות ומעבר ידע' },
+      { q: 'מה המגמה של "Business Storytelling"?', opts: ['שימוש בבינה מלאכותית', 'נרטיבים ארגוניים ככלי תקשורת אסטרטגי', 'קיצור מסרים לטוויטר', 'ניהול משברים בלבד'], correct: 1, explanation: 'Business Storytelling = שימוש בסיפורים ונרטיבים ככלי תקשורת ארגונית אסטרטגי' },
+      { q: 'לפי Taruchaín-Pozo et al., מה נדרש מעבר לתקשורת להצלחת שינוי?', opts: ['תקשורת אחד-על-אחד בלבד', 'מנהיגות, הכשרה ותרבות ארגונית תומכת', 'רק רשתות חברתיות', 'פגישות יומיות'], correct: 1, explanation: 'תקשורת היא זרז חיוני אך לא מספיקה — נדרשות גם מנהיגות, הכשרה ותרבות תומכת' },
+    ]
+  },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentTopic = 0;
+let currentCard = 0;
+let completed = new Set();
+let quizAnswers = {};
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function init() {
+  renderSidebar();
+  if (TOPICS.length > 0) loadTopic(0);
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const list = document.getElementById('topicList');
+  list.innerHTML = TOPICS.map((t, i) => `
+    <button class="topic-btn ${i === currentTopic ? 'active' : ''}" onclick="loadTopic(${i})">
+      <span class="status">${completed.has(i) ? '✅' : '○'}</span>
+      ${t.title}
+    </button>`).join('');
+  const pct = TOPICS.length ? Math.round(completed.size / TOPICS.length * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${completed.size} / ${TOPICS.length} הושלמו`;
+}
+
+// ── LOAD TOPIC ────────────────────────────────────────────────────────────────
+function loadTopic(idx) {
+  currentTopic = idx;
+  currentCard = 0;
+  quizAnswers = {};
+  const t = TOPICS[idx];
+  document.getElementById('topicHeading').textContent = t.title;
+  switchTab('summary');
+  renderSummary(t);
+  renderFlashcards(t);
+  renderQuiz(t);
+  renderSidebar();
+  closeSidebarOnMobile();
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  const idx = {summary: 0, flashcards: 1, quiz: 2}[name];
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+}
+
+// ── SUMMARY ───────────────────────────────────────────────────────────────────
+function renderSummary(t) {
+  const isDone = completed.has(currentTopic);
+  document.getElementById('panel-summary').innerHTML =
+    t.summary.map(s => `
+      <div class="summary-section">
+        <h3>${s.heading}</h3>
+        ${s.body}
+      </div>`).join('') +
+    `<div class="summary-done-wrap">
+      <button class="summary-done-btn${isDone ? ' done' : ''}" onclick="markSummaryDone()" id="summaryDoneBtn">
+        ${isDone ? '✅ הנושא הושלם' : '☐ סיימתי לקרוא — סמן כהושלם'}
+      </button>
+    </div>`;
+}
+
+function markSummaryDone() {
+  if (completed.has(currentTopic)) return;
+  completed.add(currentTopic);
+  renderSidebar();
+  const btn = document.getElementById('summaryDoneBtn');
+  if (btn) { btn.textContent = '✅ הנושא הושלם'; btn.classList.add('done'); }
+}
+
+// ── FLASHCARDS ────────────────────────────────────────────────────────────────
+function renderFlashcards(t) {
+  currentCard = 0;
+  showCard(t, 0);
+}
+
+function showCard(t, idx) {
+  const card = t.cards[idx];
+  document.getElementById('panel-flashcards').innerHTML = `
+    <div class="flashcard-wrapper">
+      <div class="card-counter">כרטיסייה ${idx + 1} מתוך ${t.cards.length}</div>
+      <div class="flashcard-scene" onclick="flipCard(this)">
+        <div class="flashcard-inner" id="cardInner">
+          <div class="flashcard-face flashcard-front">
+            <div class="card-label">לחצי להפוך</div>
+            <div class="card-question">${card.q}</div>
+            <div class="card-hint">👆 הקלקה להצגת התשובה</div>
+          </div>
+          <div class="flashcard-face flashcard-back">
+            <div class="card-answer">${card.a}</div>
+          </div>
+        </div>
+      </div>
+      <div class="flashcard-nav">
+        <button class="nav-btn" onclick="prevCard()" ${idx === 0 ? 'disabled' : ''}>הקודמת →</button>
+        <button class="nav-btn" onclick="nextCard()" ${idx === t.cards.length - 1 ? 'disabled' : ''}>הבאה ←</button>
+      </div>
+    </div>`;
+}
+
+function flipCard(scene) {
+  scene.querySelector('.flashcard-inner').classList.toggle('flipped');
+}
+
+function nextCard() {
+  const t = TOPICS[currentTopic];
+  if (currentCard < t.cards.length - 1) { currentCard++; showCard(t, currentCard); }
+}
+
+function prevCard() {
+  if (currentCard > 0) { currentCard--; showCard(TOPICS[currentTopic], currentCard); }
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────────────────────
+function renderQuiz(t) {
+  const html = t.quiz.map((q, qi) => `
+    <div class="quiz-question-block" id="qblock-${qi}">
+      <div class="quiz-q-text">${qi + 1}. ${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((opt, oi) => `
+          <button class="quiz-opt" id="opt-${qi}-${oi}" onclick="answerQ(${qi},${oi},${q.correct})">
+            ${opt}
+          </button>`).join('')}
+      </div>
+      <div class="quiz-explanation" id="exp-${qi}">${q.explanation}</div>
+    </div>`).join('');
+  document.getElementById('panel-quiz').innerHTML =
+    `<div class="quiz-wrapper">${html}<div class="quiz-score" id="quizScore"><span id="scoreText"></span><br><button class="retry-btn" onclick="retryQuiz()">נסי שוב 🔄</button></div></div>`;
+}
+
+function answerQ(qi, oi, correct) {
+  if (quizAnswers[qi] !== undefined) return;
+  quizAnswers[qi] = oi;
+  const block = document.getElementById('qblock-' + qi);
+  block.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correct) btn.classList.add('correct');
+    else if (i === oi) btn.classList.add('wrong');
+  });
+  document.getElementById('exp-' + qi).style.display = 'block';
+  const t = TOPICS[currentTopic];
+  if (Object.keys(quizAnswers).length === t.quiz.length) showScore(t);
+}
+
+function showScore(t) {
+  const score = t.quiz.reduce((s, q, i) => s + (quizAnswers[i] === q.correct ? 1 : 0), 0);
+  const total = t.quiz.length;
+  document.getElementById('scoreText').textContent = `סיימת! קיבלת ${score}/${total}`;
+  document.getElementById('quizScore').style.display = 'block';
+  if (score === total) { completed.add(currentTopic); renderSidebar(); }
+}
+
+function retryQuiz() {
+  quizAnswers = {};
+  renderQuiz(TOPICS[currentTopic]);
+}
+
+// ── GENERAL REVIEW ────────────────────────────────────────────────────────────
+let reviewDeck = [];
+let reviewDeckIdx = 0;
+let reviewQuiz = [];
+let reviewAnswers = {};
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startGeneralReview() {
+  reviewDeck = shuffle(TOPICS.flatMap(t => t.cards.map(c => ({ ...c, topicTitle: t.title }))));
+  reviewDeckIdx = 0;
+  reviewQuiz = shuffle(TOPICS.flatMap(t => t.quiz.map(q => ({ ...q, topicTitle: t.title })))).slice(0, 30);
+  reviewAnswers = {};
+
+  document.getElementById('topicHeading').style.display = 'none';
+  document.querySelector('.tabs').style.display = 'none';
+  document.querySelectorAll('.tab-panel').forEach(p => { p.style.display = 'none'; });
+  const grp = document.getElementById('general-review-panel');
+  grp.style.display = 'flex';
+
+  showReviewTab('cards');
+  closeSidebarOnMobile();
+}
+
+function exitGeneralReview() {
+  document.getElementById('general-review-panel').style.display = 'none';
+  document.getElementById('topicHeading').style.display = '';
+  document.querySelector('.tabs').style.display = '';
+  loadTopic(currentTopic);
+}
+
+function showReviewTab(tab) {
+  document.getElementById('rtab-cards').classList.toggle('active', tab === 'cards');
+  document.getElementById('rtab-quiz').classList.toggle('active', tab === 'quiz');
+  if (tab === 'cards') showReviewCard(reviewDeckIdx);
+  else renderReviewQuiz();
+}
+
+function showReviewCard(idx) {
+  reviewDeckIdx = idx;
+  const card = reviewDeck[idx];
+  document.getElementById('review-content').innerHTML = `
+    <div class="flashcard-wrapper">
+      <div class="topic-badge">${card.topicTitle}</div>
+      <div class="card-counter">כרטיסייה ${idx + 1} מתוך ${reviewDeck.length}</div>
+      <div class="flashcard-scene" onclick="this.querySelector('.flashcard-inner').classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-face flashcard-front">
+            <div class="card-label">לחצי להפוך</div>
+            <div class="card-question">${card.q}</div>
+            <div class="card-hint">👆 הקלקה להצגת התשובה</div>
+          </div>
+          <div class="flashcard-face flashcard-back">
+            <div class="card-answer">${card.a}</div>
+          </div>
+        </div>
+      </div>
+      <div class="flashcard-nav">
+        <button class="nav-btn" onclick="showReviewCard(${idx - 1})" ${idx === 0 ? 'disabled' : ''}>הקודמת →</button>
+        <button class="nav-btn" onclick="showReviewCard(${idx + 1})" ${idx === reviewDeck.length - 1 ? 'disabled' : ''}>הבאה ←</button>
+      </div>
+    </div>`;
+}
+
+function renderReviewQuiz() {
+  document.getElementById('review-content').innerHTML =
+    `<div class="quiz-wrapper">` +
+    reviewQuiz.map((q, qi) => `
+      <div class="quiz-question-block" id="rqblock-${qi}">
+        <div class="topic-badge">${q.topicTitle}</div>
+        <div class="quiz-q-text">${qi + 1}. ${q.q}</div>
+        <div class="quiz-options">
+          ${q.opts.map((opt, oi) => `
+            <button class="quiz-opt" id="ropt-${qi}-${oi}" onclick="answerReviewQ(${qi},${oi},${q.correct})">${opt}</button>`).join('')}
+        </div>
+        <div class="quiz-explanation" id="rexp-${qi}">${q.explanation}</div>
+      </div>`).join('') +
+    `<div class="quiz-score" id="review-score" style="display:none"></div></div>`;
+}
+
+function answerReviewQ(qi, oi, correct) {
+  if (reviewAnswers[qi] !== undefined) return;
+  reviewAnswers[qi] = oi;
+  const block = document.getElementById('rqblock-' + qi);
+  block.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correct) btn.classList.add('correct');
+    else if (i === oi) btn.classList.add('wrong');
+  });
+  document.getElementById('rexp-' + qi).style.display = 'block';
+  if (Object.keys(reviewAnswers).length === reviewQuiz.length) {
+    const score = reviewQuiz.reduce((s, q, i) => s + (reviewAnswers[i] === q.correct ? 1 : 0), 0);
+    const el = document.getElementById('review-score');
+    el.style.display = 'block';
+    el.innerHTML = `🎯 סיימת! קיבלת ${score} / ${reviewQuiz.length}<br>
+      <button class="retry-btn" onclick="retryReviewQuiz()">נסי שוב 🔄</button>`;
+  }
+}
+
+function retryReviewQuiz() {
+  reviewAnswers = {};
+  reviewQuiz = shuffle(TOPICS.flatMap(t => t.quiz.map(q => ({ ...q, topicTitle: t.title })))).slice(0, 30);
+  renderReviewQuiz();
+}
+
+// ── MOBILE SIDEBAR ───────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen = sidebar.classList.toggle('open');
+  overlay.classList.toggle('visible', isOpen);
+}
+
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 640) {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+  }
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
